@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вика — менторинг</title>
+<style>
+  :root {
+    --green: #b6f000;
+    --green-dark: #8ab800;
+    --bg: #f5f5f0;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --muted: #666;
+    --border: #e0e0d8;
+    --accent: #1a1a1a;
+    --tag-bg: #f0f0e8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 32px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 700; color: #000; flex-shrink: 0;
+  }
+
+  header h1 { font-size: 24px; font-weight: 700; }
+  header p { color: #aaa; font-size: 14px; margin-top: 2px; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+  /* Section headers */
+  .section-title {
+    font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 16px; margin-top: 40px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* Goal banner */
+  .goal-banner {
+    background: var(--green);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 32px;
+  }
+  .goal-banner .label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #666; }
+  .goal-banner .goal-text { font-size: 26px; font-weight: 800; color: #000; margin-top: 6px; line-height: 1.2; }
+  .goal-banner .nearest { margin-top: 16px; background: rgba(0,0,0,0.08); border-radius: 10px; padding: 12px 16px; font-size: 14px; }
+  .goal-banner .nearest strong { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; color: #444; }
+
+  /* Cards grid */
+  .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 640px) { .cards-grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 22px 24px;
+    border: 1px solid var(--border);
+  }
+
+  .card-title {
+    font-size: 14px; font-weight: 700; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .card-icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: var(--green); display: flex; align-items: center;
+    justify-content: center; font-size: 14px; flex-shrink: 0;
+  }
+
+  /* Checklist */
+  .checklist { list-style: none; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 7px 0; border-bottom: 1px solid var(--border);
+    font-size: 14px; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li.done { opacity: 0.45; }
+  .checklist li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+  .checkbox {
+    width: 18px; height: 18px; border-radius: 5px;
+    border: 2px solid var(--border); flex-shrink: 0; margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; background: #fff;
+  }
+  .checklist li.done .checkbox {
+    background: var(--green); border-color: var(--green);
+  }
+  .checklist li.done .checkbox::after {
+    content: '✓'; font-size: 11px; color: #000; font-weight: 700;
+  }
+
+  /* Agenda checklist — already done */
+  .agenda-done .checkbox { background: var(--green); border-color: var(--green); }
+  .agenda-done .checkbox::after { content: '✓'; font-size: 11px; color: #000; font-weight: 700; }
+
+  /* Feedback / notes list */
+  .feedback-list { list-style: none; }
+  .feedback-list li {
+    font-size: 13.5px; padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .feedback-list li:last-child { border-bottom: none; }
+  .num {
+    background: var(--tag-bg); color: var(--muted);
+    font-size: 11px; font-weight: 700; min-width: 22px; height: 22px;
+    border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* Task card (tестовое) */
+  .task-card {
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .task-card-header {
+    background: var(--accent); color: #fff;
+    padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .task-card-header h3 { font-size: 16px; font-weight: 700; }
+  .task-tag {
+    background: var(--green); color: #000;
+    font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .task-body { padding: 24px; }
+  .task-context {
+    background: var(--tag-bg); border-radius: 10px; padding: 14px 16px;
+    font-size: 13.5px; margin-bottom: 20px; line-height: 1.6;
+  }
+  .task-context strong { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
+
+  .task-questions { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .task-q {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 12px 14px; border-radius: 10px;
+    background: var(--bg); font-size: 14px;
+    cursor: pointer; transition: background 0.15s;
+    border: 1.5px solid transparent;
+  }
+  .task-q:hover { background: #eeeee6; }
+  .task-q.answered { border-color: var(--green); background: #f4ffe0; }
+  .task-q .q-num {
+    background: var(--accent); color: #fff;
+    font-size: 12px; font-weight: 700;
+    width: 24px; height: 24px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .task-q.answered .q-num { background: var(--green); color: #000; }
+
+  /* Growth table */
+  .growth-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .growth-table th {
+    background: var(--accent); color: #fff;
+    padding: 10px 14px; text-align: left; font-weight: 600; font-size: 12px;
+  }
+  .growth-table th:first-child { border-radius: 0; }
+  .growth-table td {
+    padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top;
+  }
+  .growth-table tr:last-child td { border-bottom: none; }
+  .growth-table tr:nth-child(even) td { background: var(--tag-bg); }
+  .growth-point { font-weight: 600; }
+
+  /* Next meeting */
+  .next-meeting {
+    background: var(--card); border-radius: 14px; border: 1px solid var(--border);
+    padding: 24px;
+  }
+  .next-meeting ol { padding-left: 18px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+  .next-meeting li { padding: 4px 0; }
+
+  /* Skills tags */
+  .skills-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .skill-tag {
+    background: var(--tag-bg); border: 1.5px solid var(--border);
+    border-radius: 20px; padding: 5px 14px; font-size: 13px; font-weight: 500;
+  }
+  .skill-tag.highlight { background: #fff3cd; border-color: #ffd500; }
+
+  /* Progress bar */
+  .progress-wrap { margin-top: 16px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .progress-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--green); border-radius: 4px; transition: width 0.4s ease; }
+
+  .divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+  /* Vacancies */
+  .vacancy-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 14px; border-radius: 10px; background: var(--bg);
+    border: 1px solid var(--border); text-decoration: none; color: var(--text);
+    font-size: 13.5px; margin-bottom: 8px; transition: background 0.15s;
+  }
+  .vacancy-link:hover { background: #eeeee6; }
+  .vacancy-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+  /* Tip block */
+  .tip {
+    background: #fff8e1; border-left: 4px solid #ffd600;
+    border-radius: 0 10px 10px 0; padding: 12px 16px;
+    font-size: 13.5px; margin: 12px 0; line-height: 1.6;
+  }
+  .tip strong { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #b8860b; display: block; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="avatar">В</div>
+  <div>
+    <h1>Вика — менторинг</h1>
+    <p>@victoriawvw · Встреча 1 — 1 апреля 2026</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Goal -->
+  <div class="goal-banner" style="display:flex;align-items:center;gap:24px">
+    <img src="vika.jpg" alt="Вика" style="width:90px;height:90px;border-radius:50%;object-fit:cover;flex-shrink:0;border:3px solid rgba(0,0,0,0.12);">
+    <div style="flex:1">
+      <div class="label">Цель на ближайшие 2 месяца</div>
+      <div class="goal-text">Сменить роль на продакта</div>
+      <div class="nearest">
+        <strong>Ближайший шаг</strong>
+        Откликнуться на вакансию МТС (чаты)
+      </div>
+    </div>
+  </div>
+
+  <!-- Agenda -->
+  <div class="section-title">Повестка встречи</div>
+  <div class="card" style="margin-bottom:32px">
+    <ul class="checklist" id="agenda">
+      <li class="done agenda-done"><span class="checkbox"></span><span class="check-text">Что нового?</span></li>
+      <li class="done agenda-done"><span class="checkbox"></span><span class="check-text">Что было легко / трудно из заданий?</span></li>
+      <li class="done agenda-done"><span class="checkbox"></span><span class="check-text">День продакта (если уложились в 10 мин)</span></li>
+      <li class="done agenda-done"><span class="checkbox"></span><span class="check-text">Компетенции</span></li>
+      <li class="done agenda-done"><span class="checkbox"></span><span class="check-text">Резюме</span></li>
+      <li class="done agenda-done"><span class="checkbox"></span><span class="check-text">Вакансии</span></li>
+      <li class="done agenda-done"><span class="checkbox"></span><span class="check-text">Цель</span></li>
+    </ul>
+  </div>
+
+  <!-- Two columns: Competencies + Vacancies -->
+  <div class="section-title">Компетенции и вакансии</div>
+  <div class="cards-grid" style="margin-bottom:32px">
+
+    <div class="card">
+      <div class="card-title"><div class="card-icon">📊</div>Компетенции</div>
+      <p style="font-size:13.5px;color:var(--muted);margin-bottom:12px">Над чем работаем:</p>
+      <div class="skills-tags">
+        <span class="skill-tag highlight">А/Б тесты</span>
+        <span class="skill-tag highlight">Стратегическое видение</span>
+        <span class="skill-tag highlight">Метрики продукта</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="card-icon">💼</div>Вакансии</div>
+      <a class="vacancy-link" href="https://hirify.me/jobs/386941-product-manager-atm-network" target="_blank">
+        <span class="vacancy-dot"></span>PM — ATM Network (hirify)
+      </a>
+      <a class="vacancy-link" href="https://getmatch.ru/vacancies/33223-rukovoditel-produkta-chaty" target="_blank">
+        <span class="vacancy-dot"></span>Руководитель продукта — Чаты (getmatch)
+      </a>
+      <a class="vacancy-link" href="https://hirify.me/jobs/423348-product-manager-healthtech" target="_blank">
+        <span class="vacancy-dot"></span>PM — Healthtech (hirify)
+      </a>
+      <div class="tip" style="margin-top:12px"><strong>Вопрос для размышления</strong>Кто будет нанимать тебя? Как они будут тебя искать?</div>
+    </div>
+  </div>
+
+  <!-- Resume feedback -->
+  <div class="section-title">Фидбек по резюме</div>
+  <div class="cards-grid" style="margin-bottom:32px">
+
+    <div class="card">
+      <div class="card-title"><div class="card-icon">📝</div>Раздел PM / текущая роль</div>
+      <ul class="feedback-list">
+        <li><span class="num">1</span>«Отвечаю за развитие клиентского опыта» — кто клиенты?</li>
+        <li><span class="num">2</span>В следующем предложении снова «без ухудшения клиентского опыта» — повтор</li>
+        <li><span class="num">3</span>«Экономику возвратного потока в Ozon» — о каких именно возвратах речь?</li>
+        <li><span class="num">4</span>«Операционные расходы» — уточни, какие именно</li>
+        <li><span class="num">5</span>«Много работаю с данными» — лучше раскрыть основную метрику и её динамику</li>
+        <li><span class="num">6</span>«Самостоятельно нахожу точки улучшений» — нет аналитика в команде? Поясни</li>
+        <li><span class="num">7</span>«Ранее руководила командой из 9 человек» — а сейчас? Это тоже Ozon?</li>
+        <li><span class="num">8</span>«Опыт на стыке бизнеса и разработки» — звучит как новичок. Убрать или переформулировать</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="card-icon">✏️</div>Project Manager (BA) — правки</div>
+      <ul class="feedback-list">
+        <li><span class="num">1</span>Оставить одно название роли, остальное раскрыть в ЗО</li>
+        <li><span class="num">2</span>«Владею проблемой роста» — неясно</li>
+        <li><span class="num">3</span>«Участвую в roadmap с остальными» — ставит под сомнение твою роль</li>
+        <li><span class="num">4</span>«Возвраты/отмены» → заменить на «невыкупы»</li>
+        <li><span class="num">5</span>«Снижение потерь до 300 млн» — как посчитали?</li>
+        <li><span class="num">6</span>«Унифицировала сроки возвратов в РФ/СНГ/Global» — а зачем? Какую проблему решала?</li>
+        <li><span class="num">7</span>«Корректный UX» — как поняла, что корректный? Убрать оценочное</li>
+        <li><span class="num">8</span>«Премодерация для 30% продавцов» — почему 30%? В чём суть?</li>
+        <li><span class="num">9</span>Избегать слов «много», «крупно» и других оценочных</li>
+      </ul>
+      <div class="tip"><strong>Ключевой совет</strong>Резюме — не про прошлое, а про будущее. «Почему должны взять именно тебя?»</div>
+    </div>
+  </div>
+
+  <!-- Suggested edits -->
+  <div class="section-title">Примеры переформулировок</div>
+  <div class="card" style="margin-bottom:32px">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">До → После</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13.5px">
+      <div style="background:#fff0f0;border-radius:8px;padding:12px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#c00;margin-bottom:6px;font-weight:700">Было</div>
+        В своей роли фокусируюсь на изменениях в продукте и процессах, которые позволяют снижать операционные затраты без ухудшения клиентского опыта (BX, SX)
+      </div>
+      <div style="background:#f4ffe0;border-radius:8px;padding:12px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#5a8000;margin-bottom:6px;font-weight:700">Стало</div>
+        Фокусируюсь на изменениях продукта и процессов, снижающих операционные затраты без ухудшения клиентского опыта (BX, SX).
+      </div>
+      <div style="background:#fff0f0;border-radius:8px;padding:12px">
+        Ранее руководила командой разработки из 9 человек — мы с нуля создали внутренний ERP-продукт для работы с поставщиками в сфере закупок.
+      </div>
+      <div style="background:#f4ffe0;border-radius:8px;padding:12px">
+        Могу уверенно управлять командой 10–15 человек (релевантный опыт: создание внутреннего ERP-продукта в команде из 9 человек).
+      </div>
+    </div>
+  </div>
+
+  <!-- Homework table -->
+  <div class="section-title">Домашка и точки роста</div>
+  <div class="card" style="margin-bottom:32px;padding:0;overflow:hidden">
+    <table class="growth-table">
+      <thead>
+        <tr>
+          <th style="width:33%">Точка роста</th>
+          <th style="width:33%">Почему это важно</th>
+          <th style="width:34%">Рекомендация к след. сессии</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="growth-point">Тестовое задание</span><br><span style="font-size:12px;color:var(--muted)">про чаты</span></td>
+          <td style="color:var(--muted);font-size:13px">—</td>
+          <td style="color:var(--muted);font-size:13px">—</td>
+        </tr>
+        <tr>
+          <td><span class="growth-point">Продуктовый кейс</span><br><span style="font-size:12px;color:var(--muted)">не про чаты (Ozon)</span></td>
+          <td style="color:var(--muted);font-size:13px">—</td>
+          <td style="color:var(--muted);font-size:13px">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Test task -->
+  <div class="section-title">Тестовое задание</div>
+  <div class="task-card" style="margin-bottom:32px">
+    <div class="task-card-header">
+      <h3>Запустить групповые чаты</h3>
+      <span class="task-tag">Домашка</span>
+    </div>
+    <div class="task-body">
+      <div class="task-context">
+        <strong>Контекст</strong>
+        Ты — Product Manager в «самом крупном агрегаторе объявлений», команда «Коммуникации». Сейчас пользователи общаются только 1-на-1 после публикации объявления. Задача: <strong>запустить групповые чаты</strong>.
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Нажми на вопрос, чтобы отметить как выполненный</p>
+      <ul class="task-questions" id="taskQuestions">
+        <li class="task-q" onclick="toggleTask(this)">
+          <span class="q-num">1</span>
+          Опиши 3 пользовательских сценария, где групповой чат решает проблему лучше личного чата или внешних мессенджеров
+        </li>
+        <li class="task-q" onclick="toggleTask(this)">
+          <span class="q-num">2</span>
+          Составь продуктовый бэклог и определи скоуп MVP. Опиши план запуска — как пользователи узнают о фиче?
+        </li>
+        <li class="task-q" onclick="toggleTask(this)">
+          <span class="q-num">3</span>
+          Какие видишь риски при запуске групповых чатов?
+        </li>
+        <li class="task-q" onclick="toggleTask(this)">
+          <span class="q-num">4</span>
+          Как будешь оценивать успешность запуска?
+        </li>
+        <li class="task-q" onclick="toggleTask(this)">
+          <span class="q-num">5</span>
+          Кто будет первыми пользователями групповых чатов?
+        </li>
+        <li class="task-q" onclick="toggleTask(this)">
+          <span class="q-num">6</span>
+          Через месяц: чатов +200%, но сделок в «Аренде» −10%. Какие 3 гипотезы проверишь первыми?
+        </li>
+      </ul>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Прогресс</span>
+          <span id="progressText">0 / 6</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+      <div class="tip" style="margin-top:16px"><strong>Формат</strong>Результат — документ или презентация, максимум 3 страницы (без учёта графики и таблиц)</div>
+    </div>
+  </div>
+
+  <!-- Next meeting -->
+  <div class="section-title">Следующая встреча</div>
+  <div class="next-meeting" style="margin-bottom:32px">
+    <div class="card-title" style="margin-bottom:16px"><div class="card-icon">📅</div>Повестка</div>
+    <ul class="checklist" id="nextMeeting">
+      <li onclick="toggleCheck(this)"><span class="checkbox"></span><span class="check-text">Обсудить домашку</span></li>
+      <li onclick="toggleCheck(this)"><span class="checkbox"></span><span class="check-text">Обсудить, как идёт достижение ближайшей цели</span></li>
+      <li onclick="toggleCheck(this)"><span class="checkbox"></span><span class="check-text">Смоук-интервью первого этапа</span></li>
+    </ul>
+    <div style="margin-top:14px;padding:10px 14px;background:var(--tag-bg);border-radius:8px;font-size:13.5px">
+      <strong style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Ближайшая цель</strong>
+      <p style="margin-top:4px;font-style:italic">уже другая — уточнить на встрече</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxDhe36tMSqfJ-HxZtCIV-rcQy95XQ9nOV3ozIPx440XrztTkqdsaVK_6V8XonNpTRv/exec';
+  let saveTimer = null;
+
+  function getState() {
+    const state = {};
+    ['agenda', 'nextMeeting'].forEach(id => {
+      const list = document.getElementById(id);
+      if (list) state[id] = [...list.querySelectorAll('li')].map(li => li.classList.contains('done'));
+    });
+    state['taskQuestions'] = [...document.querySelectorAll('#taskQuestions .task-q')].map(q => q.classList.contains('answered'));
+    return state;
+  }
+
+  function applyState(state) {
+    ['agenda', 'nextMeeting'].forEach(id => {
+      if (!state[id]) return;
+      const list = document.getElementById(id);
+      if (!list) return;
+      list.querySelectorAll('li').forEach((li, i) => {
+        li.classList.toggle('done', !!state[id][i]);
+      });
+    });
+    if (state['taskQuestions']) {
+      document.querySelectorAll('#taskQuestions .task-q').forEach((q, i) => {
+        q.classList.toggle('answered', !!state['taskQuestions'][i]);
+      });
+      updateProgress();
+    }
+  }
+
+  function saveState() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      const body = JSON.stringify(getState());
+      fetch(API_URL, { method: 'POST', body })
+        .catch(err => console.warn('Save failed:', err));
+    }, 500);
+  }
+
+  function loadState() {
+    fetch(API_URL)
+      .then(r => r.json())
+      .then(state => { if (state && typeof state === 'object') applyState(state); })
+      .catch(err => console.warn('Load failed:', err));
+  }
+
+  function toggleCheck(el) {
+    el.classList.toggle('done');
+    saveState();
+  }
+
+  function toggleTask(el) {
+    el.classList.toggle('answered');
+    updateProgress();
+    saveState();
+  }
+
+  function updateProgress() {
+    const items = document.querySelectorAll('#taskQuestions .task-q');
+    const done = document.querySelectorAll('#taskQuestions .task-q.answered').length;
+    const total = items.length;
+    document.getElementById('progressText').textContent = done + ' / ' + total;
+    document.getElementById('progressFill').style.width = (done / total * 100) + '%';
+  }
+
+  loadState();
+</script>
+
+</body>
+</html>
