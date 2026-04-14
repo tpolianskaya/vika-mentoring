@@ -225,6 +225,34 @@
   .vacancy-link:hover { background: #eeeee6; }
   .vacancy-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
 
+  /* Loader */
+  .loading-block {
+    position: relative;
+    pointer-events: none;
+  }
+  .loading-block::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.75);
+    border-radius: 14px;
+    backdrop-filter: blur(2px);
+    z-index: 10;
+  }
+  .loading-block::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 22px; height: 22px;
+    border: 2.5px solid var(--border);
+    border-top-color: var(--green-dark);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    z-index: 11;
+  }
+  @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
   /* Tip block */
   .tip {
     background: #fff8e1; border-left: 4px solid #ffd600;
@@ -261,7 +289,7 @@
 
   <!-- Agenda -->
   <div class="section-title">Повестка встречи</div>
-  <div class="card" style="margin-bottom:32px">
+  <div class="card loading-block" id="card-agenda" style="margin-bottom:32px">
     <ul class="checklist" id="agenda">
       <li onclick="toggleCheck(this)"><span class="checkbox"></span><span class="check-text">Что нового?</span></li>
       <li onclick="toggleCheck(this)"><span class="checkbox"></span><span class="check-text">Что было легко / трудно из заданий?</span></li>
@@ -388,7 +416,7 @@
 
   <!-- Test task -->
   <div class="section-title">Тестовое задание</div>
-  <div class="task-card" style="margin-bottom:32px">
+  <div class="task-card loading-block" id="card-taskQuestions" style="margin-bottom:32px">
     <div class="task-card-header">
       <h3>Запустить групповые чаты</h3>
       <span class="task-tag">Домашка</span>
@@ -438,7 +466,7 @@
 
   <!-- Next meeting -->
   <div class="section-title">Следующая встреча</div>
-  <div class="next-meeting" style="margin-bottom:32px">
+  <div class="next-meeting loading-block" id="card-nextMeeting" style="margin-bottom:32px">
     <div class="card-title" style="margin-bottom:16px"><div class="card-icon">📅</div>Повестка</div>
     <ul class="checklist" id="nextMeeting">
       <li onclick="toggleCheck(this)"><span class="checkbox"></span><span class="check-text">Обсудить домашку</span></li>
@@ -493,11 +521,21 @@
     }, 500);
   }
 
+  function removeLoaders() {
+    document.querySelectorAll('.loading-block').forEach(el => el.classList.remove('loading-block'));
+  }
+
   function loadState() {
     fetch(API_URL)
       .then(r => r.json())
-      .then(state => { if (state && typeof state === 'object') applyState(state); })
-      .catch(err => console.warn('Load failed:', err));
+      .then(state => {
+        if (state && typeof state === 'object') applyState(state);
+        removeLoaders();
+      })
+      .catch(err => {
+        console.warn('Load failed:', err);
+        removeLoaders();
+      });
   }
 
   function toggleCheck(el) {
