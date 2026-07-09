@@ -185,7 +185,8 @@
     padding: 4px 0; border-bottom: 1px solid var(--border);
   }
   .link-list li:last-child { border-bottom: none; }
-  .link-list .link-input { flex: 1; min-width: 0; font-size: 13.5px; padding: 8px 8px; }
+  .link-list .link-desc { flex: 1.1; min-width: 0; font-size: 13.5px; padding: 8px 8px; }
+  .link-list .link-input { flex: 1; min-width: 0; font-size: 13.5px; padding: 8px 8px; color: var(--muted); }
 
   .loading-block { position: relative; pointer-events: none; }
   .loading-block::after {
@@ -324,11 +325,11 @@
   <div class="section-title">Полезные ссылки</div>
   <div class="card" style="padding:0;overflow:hidden;margin-bottom:32px">
     <ul class="link-list" id="usefulLinks">
-      <li><input class="contact-input link-input" type="text" placeholder="вставь ссылку или текст"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
-      <li><input class="contact-input link-input" type="text" placeholder="вставь ссылку или текст"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
-      <li><input class="contact-input link-input" type="text" placeholder="вставь ссылку или текст"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
-      <li><input class="contact-input link-input" type="text" placeholder="вставь ссылку или текст"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
-      <li><input class="contact-input link-input" type="text" placeholder="вставь ссылку или текст"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
+      <li><input class="contact-input link-desc" type="text" placeholder="что это"><input class="contact-input link-input" type="text" placeholder="ссылка"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
+      <li><input class="contact-input link-desc" type="text" placeholder="что это"><input class="contact-input link-input" type="text" placeholder="ссылка"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
+      <li><input class="contact-input link-desc" type="text" placeholder="что это"><input class="contact-input link-input" type="text" placeholder="ссылка"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
+      <li><input class="contact-input link-desc" type="text" placeholder="что это"><input class="contact-input link-input" type="text" placeholder="ссылка"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
+      <li><input class="contact-input link-desc" type="text" placeholder="что это"><input class="contact-input link-input" type="text" placeholder="ссылка"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
     </ul>
     <button class="add-row-btn" onclick="addLinkRow()">+ добавить ссылку</button>
   </div>
@@ -382,7 +383,10 @@
     });
     const linkList = document.getElementById('usefulLinks');
     if (linkList) {
-      state['usefulLinks'] = [...linkList.querySelectorAll('.link-input')].map(inp => inp.value);
+      state['usefulLinks'] = [...linkList.querySelectorAll('li')].map(li => [
+        li.querySelector('.link-desc') ? li.querySelector('.link-desc').value : '',
+        li.querySelector('.link-input') ? li.querySelector('.link-input').value : ''
+      ]);
     }
     return state;
   }
@@ -422,8 +426,14 @@
         state['usefulLinks'].forEach((v, i) => {
           let li = linkList.children[i];
           if (!li) li = addLinkRow();
-          const input = li.querySelector('.link-input');
-          if (input && v) input.value = v;
+          const descInput = li.querySelector('.link-desc');
+          const linkInput = li.querySelector('.link-input');
+          if (Array.isArray(v)) {
+            if (descInput && v[0]) descInput.value = v[0];
+            if (linkInput && v[1]) linkInput.value = v[1];
+          } else if (linkInput && v) {
+            linkInput.value = v;
+          }
         });
       }
     }
@@ -494,17 +504,23 @@
   function addLinkRow() {
     const list = document.getElementById('usefulLinks');
     const li = document.createElement('li');
-    const input = document.createElement('input');
-    input.className = 'contact-input link-input';
-    input.type = 'text';
-    input.placeholder = 'вставь ссылку или текст';
-    input.addEventListener('input', saveState);
+    const descInput = document.createElement('input');
+    descInput.className = 'contact-input link-desc';
+    descInput.type = 'text';
+    descInput.placeholder = 'что это';
+    descInput.addEventListener('input', saveState);
+    const linkInput = document.createElement('input');
+    linkInput.className = 'contact-input link-input';
+    linkInput.type = 'text';
+    linkInput.placeholder = 'ссылка';
+    linkInput.addEventListener('input', saveState);
     const btn = document.createElement('button');
     btn.className = 'mm-link-btn';
     btn.title = 'Перейти';
     btn.textContent = '🔗';
     btn.addEventListener('click', () => openLink(btn));
-    li.appendChild(input);
+    li.appendChild(descInput);
+    li.appendChild(linkInput);
     li.appendChild(btn);
     list.appendChild(li);
     return li;
