@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Онбординг — чек-лист</title>
+<style>
+  :root {
+    --green: #b6f000;
+    --green-dark: #8ab800;
+    --bg: #f5f5f0;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --muted: #666;
+    --border: #e0e0d8;
+    --accent: #1a1a1a;
+    --tag-bg: #f0f0e8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 32px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 700; color: #000; flex-shrink: 0;
+  }
+
+  header h1 { font-size: 24px; font-weight: 700; }
+  header p { color: #aaa; font-size: 14px; margin-top: 2px; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+  .section-title {
+    font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 16px; margin-top: 40px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 640px) { .cards-grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 22px 24px;
+    border: 1px solid var(--border);
+  }
+
+  .card-title {
+    font-size: 14px; font-weight: 700; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .card-icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: var(--green); display: flex; align-items: center;
+    justify-content: center; font-size: 14px; flex-shrink: 0;
+  }
+
+  .checklist { list-style: none; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 0; border-bottom: 1px solid var(--border);
+    font-size: 14px; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li.done { opacity: 0.45; }
+  .checklist li.done .check-text { text-decoration: line-through; color: var(--muted); }
+
+  .checkbox {
+    width: 18px; height: 18px; border-radius: 5px;
+    border: 2px solid var(--border); flex-shrink: 0; margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; background: #fff;
+  }
+  .checklist li.done .checkbox {
+    background: var(--green); border-color: var(--green);
+  }
+  .checklist li.done .checkbox::after {
+    content: '✓'; font-size: 11px; color: #000; font-weight: 700;
+  }
+
+  .check-text a { color: var(--text); }
+  .check-text a:hover { color: var(--green-dark); }
+
+  .people-list { list-style: none; }
+  .people-list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 0; border-bottom: 1px solid var(--border);
+    font-size: 14px; cursor: pointer;
+  }
+  .people-list li:last-child { border-bottom: none; }
+  .people-list li.done { opacity: 0.45; }
+  .people-list li.done .check-text { text-decoration: line-through; color: var(--muted); }
+  .people-list .name-field {
+    border: none; border-bottom: 1px dashed var(--border);
+    background: transparent; font-size: 13px; font-weight: 700;
+    width: 130px; flex-shrink: 0; padding: 1px 2px;
+  }
+  .people-list .name-field:focus { outline: none; border-bottom-color: var(--green-dark); }
+  .people-list .role-text { color: var(--muted); font-size: 13.5px; }
+
+  .tip {
+    background: #fff8e1; border-left: 4px solid #ffd600;
+    border-radius: 0 10px 10px 0; padding: 12px 16px;
+    font-size: 13.5px; margin: 12px 0; line-height: 1.6;
+  }
+  .tip strong { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #b8860b; display: block; margin-bottom: 4px; }
+
+  .goal-card {
+    background: var(--card); border-radius: 14px; border: 1px solid var(--border);
+    padding: 22px 24px; margin-bottom: 16px; cursor: pointer; transition: opacity .2s;
+  }
+  .goal-card.done { opacity: 0.5; }
+  .goal-card.done .goal-title { text-decoration: line-through; }
+  .goal-head { display: flex; align-items: flex-start; gap: 12px; }
+  .goal-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .goal-desc { font-size: 13.5px; color: var(--muted); margin-top: 4px; }
+  .goal-desc a { color: inherit; }
+
+  .divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+  .loading-block { position: relative; pointer-events: none; }
+  .loading-block::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,0.75); border-radius: 14px;
+    backdrop-filter: blur(2px); z-index: 10;
+  }
+  .loading-block::before {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); width: 22px; height: 22px;
+    border: 2.5px solid var(--border); border-top-color: var(--green-dark);
+    border-radius: 50%; animation: spin 0.7s linear infinite; z-index: 11;
+  }
+  @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="avatar">O</div>
+  <div>
+    <h1>Онбординг в команду</h1>
+    <p>от Марии Таньшиной · 8 июля 2026</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="tip">
+    <strong>Как пользоваться</strong>
+    Отмечай пункты галочкой по мере прохождения — прогресс сохраняется в браузере (localStorage) на этом устройстве. Имена в разделе «С кем познакомиться» в исходном треде были скрыты — впиши их вручную в поля.
+  </div>
+
+  <!-- Reading list -->
+  <div class="section-title">С чего начать</div>
+  <div class="card" style="margin-bottom:32px">
+    <ul class="checklist" id="reading">
+      <li onclick="toggleCheck(this)"><span class="checkbox"></span><span class="check-text">Ознакомиться с <a href="https://docs.google.com/spreadsheets/d/187PRGD_qOQMqVkvY7-oI-9FNiN1g4wovWcMoNSCBcO0/edit?gid=993844099#gid=993844099" target="_blank" onclick="event.stopPropagation()">бэклогом</a></span></li>
+      <li onclick="toggleCheck(this)"><span class="checkbox"></span><span class="check-text">Результаты теста — фрейм «Ликвидность в E2E флоу» в <a href="https://boardmix.com/app/share/CAE.CMWNUCABKhAqe1PupS0eH_SjHHqM_MCkMAVAAQ" target="_blank" onclick="event.stopPropagation()">Boardmix</a>, сами АБ — в <a href="https://docs.google.com/spreadsheets/d/187PRGD_qOQMqVkvY7-oI-9FNiN1g4wovWcMoNSCBcO0/edit?gid=1181651855#gid=1181651855" target="_blank" onclick="event.stopPropagation()">таблице ссылок</a></span></li>
+      <li onclick="toggleCheck(this)"><span class="checkbox"></span><span class="check-text">Дока по ИК и <a href="https://docs.google.com/spreadsheets/d/1QJvBTvez3NiXs3KMe-JYZiSX_f5oS04Lgxo4EnfHXAA/edit?gid=526849264#gid=526849264" target="_blank" onclick="event.stopPropagation()">трекшену</a></span></li>
+      <li onclick="toggleCheck(this)"><span class="checkbox"></span><span class="check-text"><a href="https://www.figma.com/design/wEi8d1WGsyY4ELh6WYy2mo/%D0%94%D0%B8%D1%81%D0%BF%D0%B5%D1%82%D1%87%D0%B5%D1%80%D1%81%D0%BA%D0%B8%D0%B5-%D0%B2-%D0%A3%D1%81%D0%BB%D1%83%D0%B3%D0%B0%D1%85?node-id=7673-71678&t=1hmRNzccqDjfvGX6-1" target="_blank" onclick="event.stopPropagation()">Дизайны в Figma</a> — пройтись по вкладкам, уже есть что посмотреть в Q3</span></li>
+      <li onclick="toggleCheck(this)"><span class="checkbox"></span><span class="check-text"><a href="https://docs.google.com/document/d/1X8pDjm1dd7NJj3k4imUrOq7h7DEW-F4IJ1AIeQ0kwL4/edit?tab=t.4pb7fk1cq9us#heading=h.68nec6y6jhhb" target="_blank" onclick="event.stopPropagation()">Фин-юр схема</a> + <a href="https://jr.avito.ru/browse/PRJCTREV-13660" target="_blank" onclick="event.stopPropagation()">задача от юристов</a> с рисками</span></li>
+      <li onclick="toggleCheck(this)"><span class="checkbox"></span><span class="check-text">Флоу конкурентов — частично в <a href="https://boardmix.com/app/share/CAE.CISxayABKhBWnv6M6ITG_ia0YY1cbG0IMAVAAQ" target="_blank" onclick="event.stopPropagation()">Boardmix</a>, но и самой пройтись: обязательно Hands.ru (сайт и приложение), Профи.ру, а также услуга уборки у Яндекс Go в Москве</span></li>
+    </ul>
+  </div>
+
+  <!-- People -->
+  <div class="section-title">С кем познакомиться</div>
+  <div class="cards-grid" style="margin-bottom:32px">
+    <div class="card">
+      <div class="card-title"><div class="card-icon">👥</div>В приоритете</div>
+      <ul class="people-list" id="peopleP1">
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Команда — на дейли</span></li>
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Тимлид твоей команды — сделать регулярные 1:1</span></li>
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Твой бизнес и главный партнёр — сделать регулярные 1:1</span></li>
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Руководитель твоего бизнеса — главный лидер проекта от бизнеса</span></li>
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Стратег — может провести по трекшену</span></li>
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Бывший продакт команды — хранитель(ница) знаний, лучше понять контекст</span></li>
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Твой дизайнер</span></li>
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Твой аналитик</span></li>
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Твой UX-ресёрчер</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-icon">🗂️</div>Приоритет P2</div>
+      <ul class="people-list" id="peopleP2">
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Лид аналитики</span></li>
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Эксперт по ТРКС — по Safe Deal можно к нему</span></li>
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Ваш TUL</span></li>
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Из финтеха — пересечётесь на встречах, вероятны доработки в Q4</span></li>
+        <li onclick="toggleCheck(this)"><span class="checkbox"></span><input class="name-field" type="text" placeholder="имя" onclick="event.stopPropagation()"><span class="check-text role-text">Юристы и финансы (4 человека) — пересечёшься на встрече, будешь много работать</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Key goals -->
+  <div class="section-title">Ключевые цели на ближайшие 2–3 недели</div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:16px">По мере погружения микро-целей будет больше, но это ключевые фокусы сейчас</p>
+
+  <div class="goal-card" id="goal1" onclick="toggleGoal(this)">
+    <div class="goal-head">
+      <span class="checkbox"></span>
+      <div>
+        <div class="goal-title">1. Ретест промо-саджеста</div>
+        <div class="goal-desc">См. строку 20 в <a href="https://docs.google.com/spreadsheets/d/187PRGD_qOQMqVkvY7-oI-9FNiN1g4wovWcMoNSCBcO0/edit?gid=993844099#gid=993844099" target="_blank" onclick="event.stopPropagation()">бэклоге</a>. Нужно засетапить тест — по-хорошему за следующий спринт зафиналить диско или как минимум подготовить дизайн-концепт.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="goal-card" id="goal2" onclick="toggleGoal(this)" style="margin-bottom:32px">
+    <div class="goal-head">
+      <span class="checkbox"></span>
+      <div>
+        <div class="goal-title">2. ДИСКО: свой справочник услуг и УТП с ценой (калькулятор)</div>
+        <div class="goal-desc">См. строки 16 и 19 в бэклоге. Долгоиграющая цель — за квартал сделать свой справочник услуг и калькулятор цен по услугам, которые сейчас в тесте: Сантехника, Сборка мебели, Монтаж кондиционеров. Разбивка по категориям/услугам — у нас и конкурентов в <a href="https://docs.google.com/spreadsheets/d/1KNTvy8bHwdgqCPjgSjNX9Hd4g8RZQkPQxgKbNv_Pzjo/edit?gid=1379933649#gid=1379933649" target="_blank" onclick="event.stopPropagation()">этом файле</a>.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STORAGE_KEY = 'onboardingChecklistState';
+
+  function getState() {
+    const state = {};
+    ['reading', 'peopleP1', 'peopleP2'].forEach(id => {
+      const list = document.getElementById(id);
+      if (list) {
+        state[id] = [...list.querySelectorAll('li')].map(li => ({
+          done: li.classList.contains('done'),
+          name: li.querySelector('.name-field') ? li.querySelector('.name-field').value : undefined
+        }));
+      }
+    });
+    state['goals'] = ['goal1', 'goal2'].map(id => document.getElementById(id).classList.contains('done'));
+    return state;
+  }
+
+  function applyState(state) {
+    ['reading', 'peopleP1', 'peopleP2'].forEach(id => {
+      if (!state[id]) return;
+      const list = document.getElementById(id);
+      if (!list) return;
+      list.querySelectorAll('li').forEach((li, i) => {
+        const item = state[id][i];
+        if (!item) return;
+        li.classList.toggle('done', !!item.done);
+        const field = li.querySelector('.name-field');
+        if (field && item.name) field.value = item.name;
+      });
+    });
+    if (state['goals']) {
+      ['goal1', 'goal2'].forEach((id, i) => {
+        document.getElementById(id).classList.toggle('done', !!state['goals'][i]);
+      });
+    }
+  }
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(getState()));
+  }
+
+  function loadState() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    try { applyState(JSON.parse(raw)); } catch (e) { console.warn('Load failed:', e); }
+  }
+
+  function toggleCheck(el) {
+    el.classList.toggle('done');
+    saveState();
+  }
+
+  function toggleGoal(el) {
+    el.classList.toggle('done');
+    saveState();
+  }
+
+  document.querySelectorAll('.name-field').forEach(f => f.addEventListener('input', saveState));
+
+  loadState();
+</script>
+
+</body>
+</html>
