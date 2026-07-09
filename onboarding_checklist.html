@@ -274,7 +274,7 @@
       </table>
       <button class="add-row-btn" onclick="addContactRow('contactsTeam')">+ добавить строку</button>
     </div>
-    <div class="card" style="padding:0;overflow:hidden">
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:16px">
       <div style="padding:22px 24px 12px"><div class="card-title" style="margin-bottom:0"><div class="card-icon">🤝</div>Взаимодействуем</div></div>
       <table class="contact-table" id="contactsExternal">
         <colgroup><col style="width:24%"><col style="width:14%"><col style="width:30%"><col style="width:32%"></colgroup>
@@ -291,6 +291,24 @@
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addContactRow('contactsExternal')">+ добавить строку</button>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:22px 24px 12px"><div class="card-title" style="margin-bottom:0"><div class="card-icon">💼</div>Бизнес</div></div>
+      <table class="contact-table" id="contactsBusiness">
+        <colgroup><col style="width:24%"><col style="width:14%"><col style="width:30%"><col style="width:32%"></colgroup>
+        <thead>
+          <tr><th>Имя и фамилия</th><th>Роль</th><th>По каким вопросам</th><th>Ник в MM</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addContactRow('contactsBusiness')">+ добавить строку</button>
     </div>
   </div>
 
@@ -335,7 +353,7 @@
       }
     });
     state['goals'] = ['goal1', 'goal2'].map(id => document.getElementById(id).classList.contains('done'));
-    ['contactsTeam', 'contactsExternal'].forEach(id => {
+    ['contactsTeam', 'contactsExternal', 'contactsBusiness'].forEach(id => {
       const tbody = document.querySelector('#' + id + ' tbody');
       if (tbody) {
         state[id] = [...tbody.querySelectorAll('tr')].map(tr => [...tr.querySelectorAll('input')].map(inp => inp.value));
@@ -362,7 +380,7 @@
         document.getElementById(id).classList.toggle('done', !!state['goals'][i]);
       });
     }
-    ['contactsTeam', 'contactsExternal'].forEach(id => {
+    ['contactsTeam', 'contactsExternal', 'contactsBusiness'].forEach(id => {
       if (!state[id]) return;
       const tbody = document.querySelector('#' + id + ' tbody');
       if (!tbody) return;
