@@ -147,6 +147,28 @@
 
   .divider { height: 1px; background: var(--border); margin: 32px 0; }
 
+  .contact-table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+  .contact-table th {
+    background: var(--tag-bg); color: var(--muted);
+    padding: 8px 8px; text-align: left; font-weight: 700;
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .contact-table td { padding: 2px 2px; border-bottom: 1px solid var(--border); }
+  .contact-table tr:last-child td { border-bottom: none; }
+  .contact-input {
+    width: 100%; border: none; background: transparent;
+    padding: 7px 6px; font-size: 12.5px; font-family: inherit; color: var(--text);
+    border-radius: 6px;
+  }
+  .contact-input:focus { outline: none; background: var(--tag-bg); }
+  .contact-input::placeholder { color: #bbb; }
+  .add-row-btn {
+    display: block; width: 100%; text-align: center; padding: 10px;
+    background: none; border: none; border-top: 1px dashed var(--border);
+    color: var(--muted); font-size: 12px; cursor: pointer;
+  }
+  .add-row-btn:hover { color: var(--text); background: var(--tag-bg); }
+
   .loading-block { position: relative; pointer-events: none; }
   .loading-block::after {
     content: ''; position: absolute; inset: 0;
@@ -221,6 +243,47 @@
     </div>
   </div>
 
+  <!-- Contacts -->
+  <div class="section-title">Контакты</div>
+  <div class="cards-grid" style="margin-bottom:32px">
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:22px 24px 12px"><div class="card-title" style="margin-bottom:0"><div class="card-icon">🧩</div>В команде</div></div>
+      <table class="contact-table" id="contactsTeam">
+        <colgroup><col style="width:30%"><col style="width:16%"><col style="width:26%"><col style="width:28%"></colgroup>
+        <thead>
+          <tr><th>Имя и фамилия</th><th>Роль</th><th>По каким вопросам</th><th>Ссылка на MM</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addContactRow('contactsTeam')">+ добавить строку</button>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:22px 24px 12px"><div class="card-title" style="margin-bottom:0"><div class="card-icon">🤝</div>Взаимодействуем</div></div>
+      <table class="contact-table" id="contactsExternal">
+        <colgroup><col style="width:30%"><col style="width:16%"><col style="width:26%"><col style="width:28%"></colgroup>
+        <thead>
+          <tr><th>Имя и фамилия</th><th>Роль</th><th>По каким вопросам</th><th>Ссылка на MM</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addContactRow('contactsExternal')">+ добавить строку</button>
+    </div>
+  </div>
+
   <!-- Key goals -->
   <div class="section-title">Ключевые цели на ближайшие 2–3 недели</div>
   <p style="font-size:13px;color:var(--muted);margin-bottom:16px">По мере погружения микро-целей будет больше, но это ключевые фокусы сейчас</p>
@@ -262,6 +325,12 @@
       }
     });
     state['goals'] = ['goal1', 'goal2'].map(id => document.getElementById(id).classList.contains('done'));
+    ['contactsTeam', 'contactsExternal'].forEach(id => {
+      const tbody = document.querySelector('#' + id + ' tbody');
+      if (tbody) {
+        state[id] = [...tbody.querySelectorAll('tr')].map(tr => [...tr.querySelectorAll('input')].map(inp => inp.value));
+      }
+    });
     return state;
   }
 
@@ -283,6 +352,17 @@
         document.getElementById(id).classList.toggle('done', !!state['goals'][i]);
       });
     }
+    ['contactsTeam', 'contactsExternal'].forEach(id => {
+      if (!state[id]) return;
+      const tbody = document.querySelector('#' + id + ' tbody');
+      if (!tbody) return;
+      state[id].forEach((rowValues, i) => {
+        let tr = tbody.children[i];
+        if (!tr) tr = addContactRow(id);
+        const inputs = tr.querySelectorAll('input');
+        rowValues.forEach((v, j) => { if (inputs[j] && v) inputs[j].value = v; });
+      });
+    });
   }
 
   function saveState() {
@@ -305,7 +385,26 @@
     saveState();
   }
 
-  document.querySelectorAll('.name-field').forEach(f => f.addEventListener('input', saveState));
+  const CONTACT_PLACEHOLDERS = ['Имя Фамилия', 'роль', 'темы', 'mt.avito.ru/...'];
+
+  function addContactRow(tableId) {
+    const tbody = document.querySelector('#' + tableId + ' tbody');
+    const tr = document.createElement('tr');
+    CONTACT_PLACEHOLDERS.forEach(ph => {
+      const td = document.createElement('td');
+      const input = document.createElement('input');
+      input.className = 'contact-input';
+      input.type = 'text';
+      input.placeholder = ph;
+      input.addEventListener('input', saveState);
+      td.appendChild(input);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+    return tr;
+  }
+
+  document.querySelectorAll('.name-field, .contact-input').forEach(f => f.addEventListener('input', saveState));
 
   loadState();
 </script>
