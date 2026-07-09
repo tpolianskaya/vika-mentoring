@@ -179,6 +179,14 @@
   }
   .mm-link-btn:hover { opacity: 1; background: var(--green); }
 
+  .link-list { list-style: none; padding: 8px 16px; }
+  .link-list li {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 0; border-bottom: 1px solid var(--border);
+  }
+  .link-list li:last-child { border-bottom: none; }
+  .link-list .link-input { flex: 1; min-width: 0; font-size: 13.5px; padding: 8px 8px; }
+
   .loading-block { position: relative; pointer-events: none; }
   .loading-block::after {
     content: ''; position: absolute; inset: 0;
@@ -312,6 +320,19 @@
     </div>
   </div>
 
+  <!-- Useful links -->
+  <div class="section-title">Полезные ссылки</div>
+  <div class="card" style="padding:0;overflow:hidden;margin-bottom:32px">
+    <ul class="link-list" id="usefulLinks">
+      <li><input class="contact-input link-input" type="text" placeholder="вставь ссылку или текст"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
+      <li><input class="contact-input link-input" type="text" placeholder="вставь ссылку или текст"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
+      <li><input class="contact-input link-input" type="text" placeholder="вставь ссылку или текст"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
+      <li><input class="contact-input link-input" type="text" placeholder="вставь ссылку или текст"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
+      <li><input class="contact-input link-input" type="text" placeholder="вставь ссылку или текст"><button class="mm-link-btn" onclick="openLink(this)" title="Перейти">🔗</button></li>
+    </ul>
+    <button class="add-row-btn" onclick="addLinkRow()">+ добавить ссылку</button>
+  </div>
+
   <!-- Key goals -->
   <div class="section-title">Ключевые цели на ближайшие 2–3 недели</div>
   <p style="font-size:13px;color:var(--muted);margin-bottom:16px">По мере погружения микро-целей будет больше, но это ключевые фокусы сейчас</p>
@@ -359,6 +380,10 @@
         state[id] = [...tbody.querySelectorAll('tr')].map(tr => [...tr.querySelectorAll('input')].map(inp => inp.value));
       }
     });
+    const linkList = document.getElementById('usefulLinks');
+    if (linkList) {
+      state['usefulLinks'] = [...linkList.querySelectorAll('.link-input')].map(inp => inp.value);
+    }
     return state;
   }
 
@@ -391,6 +416,17 @@
         rowValues.forEach((v, j) => { if (inputs[j] && v) inputs[j].value = v; });
       });
     });
+    if (state['usefulLinks']) {
+      const linkList = document.getElementById('usefulLinks');
+      if (linkList) {
+        state['usefulLinks'].forEach((v, i) => {
+          let li = linkList.children[i];
+          if (!li) li = addLinkRow();
+          const input = li.querySelector('.link-input');
+          if (input && v) input.value = v;
+        });
+      }
+    }
   }
 
   function saveState() {
@@ -453,6 +489,33 @@
     const nick = input.value.trim().replace(/^@/, '');
     if (!nick) return;
     window.open(MM_BASE_URL + encodeURIComponent(nick), '_blank', 'noopener');
+  }
+
+  function addLinkRow() {
+    const list = document.getElementById('usefulLinks');
+    const li = document.createElement('li');
+    const input = document.createElement('input');
+    input.className = 'contact-input link-input';
+    input.type = 'text';
+    input.placeholder = 'вставь ссылку или текст';
+    input.addEventListener('input', saveState);
+    const btn = document.createElement('button');
+    btn.className = 'mm-link-btn';
+    btn.title = 'Перейти';
+    btn.textContent = '🔗';
+    btn.addEventListener('click', () => openLink(btn));
+    li.appendChild(input);
+    li.appendChild(btn);
+    list.appendChild(li);
+    return li;
+  }
+
+  function openLink(btn) {
+    const input = btn.previousElementSibling;
+    const raw = input.value.trim();
+    if (!raw) return;
+    const url = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw;
+    window.open(url, '_blank', 'noopener');
   }
 
   document.querySelectorAll('.name-field, .contact-input').forEach(f => f.addEventListener('input', saveState));
