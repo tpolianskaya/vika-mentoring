@@ -169,6 +169,16 @@
   }
   .add-row-btn:hover { color: var(--text); background: var(--tag-bg); }
 
+  .mm-cell { display: flex; align-items: center; gap: 2px; }
+  .mm-cell .contact-input { flex: 1; min-width: 0; }
+  .mm-link-btn {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 6px;
+    border: none; background: transparent; cursor: pointer;
+    font-size: 13px; display: flex; align-items: center; justify-content: center;
+    opacity: 0.55; transition: all 0.15s;
+  }
+  .mm-link-btn:hover { opacity: 1; background: var(--green); }
+
   .loading-block { position: relative; pointer-events: none; }
   .loading-block::after {
     content: ''; position: absolute; inset: 0;
@@ -245,21 +255,21 @@
 
   <!-- Contacts -->
   <div class="section-title">Контакты</div>
-  <div class="cards-grid" style="margin-bottom:32px">
-    <div class="card" style="padding:0;overflow:hidden">
+  <div style="margin-bottom:32px">
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:16px">
       <div style="padding:22px 24px 12px"><div class="card-title" style="margin-bottom:0"><div class="card-icon">🧩</div>В команде</div></div>
       <table class="contact-table" id="contactsTeam">
-        <colgroup><col style="width:30%"><col style="width:16%"><col style="width:26%"><col style="width:28%"></colgroup>
+        <colgroup><col style="width:24%"><col style="width:14%"><col style="width:30%"><col style="width:32%"></colgroup>
         <thead>
-          <tr><th>Имя и фамилия</th><th>Роль</th><th>По каким вопросам</th><th>Ссылка на MM</th></tr>
+          <tr><th>Имя и фамилия</th><th>Роль</th><th>По каким вопросам</th><th>Ник в MM</th></tr>
         </thead>
         <tbody>
-          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
-          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
-          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
-          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
-          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
-          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addContactRow('contactsTeam')">+ добавить строку</button>
@@ -267,17 +277,17 @@
     <div class="card" style="padding:0;overflow:hidden">
       <div style="padding:22px 24px 12px"><div class="card-title" style="margin-bottom:0"><div class="card-icon">🤝</div>Взаимодействуем</div></div>
       <table class="contact-table" id="contactsExternal">
-        <colgroup><col style="width:30%"><col style="width:16%"><col style="width:26%"><col style="width:28%"></colgroup>
+        <colgroup><col style="width:24%"><col style="width:14%"><col style="width:30%"><col style="width:32%"></colgroup>
         <thead>
-          <tr><th>Имя и фамилия</th><th>Роль</th><th>По каким вопросам</th><th>Ссылка на MM</th></tr>
+          <tr><th>Имя и фамилия</th><th>Роль</th><th>По каким вопросам</th><th>Ник в MM</th></tr>
         </thead>
         <tbody>
-          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
-          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
-          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
-          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
-          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
-          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td><input class="contact-input" type="text" placeholder="mt.avito.ru/..."></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
+          <tr><td><input class="contact-input" type="text" placeholder="Имя Фамилия"></td><td><input class="contact-input" type="text" placeholder="роль"></td><td><input class="contact-input" type="text" placeholder="темы"></td><td class="mm-cell"><input class="contact-input mm-input" type="text" placeholder="ник"><button class="mm-link-btn" onclick="openMMLink(this)" title="Открыть в MM">🔗</button></td></tr>
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addContactRow('contactsExternal')">+ добавить строку</button>
@@ -385,7 +395,8 @@
     saveState();
   }
 
-  const CONTACT_PLACEHOLDERS = ['Имя Фамилия', 'роль', 'темы', 'mt.avito.ru/...'];
+  const CONTACT_PLACEHOLDERS = ['Имя Фамилия', 'роль', 'темы'];
+  const MM_BASE_URL = 'https://mt.avito.ru/avito/messages/@';
 
   function addContactRow(tableId) {
     const tbody = document.querySelector('#' + tableId + ' tbody');
@@ -400,8 +411,30 @@
       td.appendChild(input);
       tr.appendChild(td);
     });
+    const mmTd = document.createElement('td');
+    mmTd.className = 'mm-cell';
+    const mmInput = document.createElement('input');
+    mmInput.className = 'contact-input mm-input';
+    mmInput.type = 'text';
+    mmInput.placeholder = 'ник';
+    mmInput.addEventListener('input', saveState);
+    const mmBtn = document.createElement('button');
+    mmBtn.className = 'mm-link-btn';
+    mmBtn.title = 'Открыть в MM';
+    mmBtn.textContent = '🔗';
+    mmBtn.addEventListener('click', () => openMMLink(mmBtn));
+    mmTd.appendChild(mmInput);
+    mmTd.appendChild(mmBtn);
+    tr.appendChild(mmTd);
     tbody.appendChild(tr);
     return tr;
+  }
+
+  function openMMLink(btn) {
+    const input = btn.previousElementSibling;
+    const nick = input.value.trim().replace(/^@/, '');
+    if (!nick) return;
+    window.open(MM_BASE_URL + encodeURIComponent(nick), '_blank', 'noopener');
   }
 
   document.querySelectorAll('.name-field, .contact-input').forEach(f => f.addEventListener('input', saveState));
