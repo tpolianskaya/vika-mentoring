@@ -113,6 +113,12 @@
   .people-list li:last-child { border-bottom: none; }
   .people-list li.done { opacity: 0.45; }
   .people-list li.done .check-text { text-decoration: line-through; color: var(--muted); }
+  .people-list li.done .checkbox {
+    background: var(--green); border-color: var(--green);
+  }
+  .people-list li.done .checkbox::after {
+    content: '✓'; font-size: 11px; color: #000; font-weight: 700;
+  }
   .people-list .name-field {
     border: none; border-bottom: 1px dashed var(--border);
     background: transparent; font-size: 13px; font-weight: 700;
