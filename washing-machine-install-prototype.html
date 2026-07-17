@@ -166,6 +166,126 @@
   }
   .option-btn:hover { border-color: var(--accent); }
   .option-btn:active { background: var(--accent-dim); }
+  .option-btn.selected {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  /* Contact form */
+  .text-field {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1.5px solid transparent;
+    border-radius: 14px;
+    color: var(--text);
+    font-size: 16px;
+    padding: 15px 16px;
+    margin-bottom: 10px;
+    display: block;
+    font-family: inherit;
+  }
+  .text-field::placeholder { color: var(--text-placeholder); }
+  .text-field:focus { outline: none; border-color: var(--accent); }
+  .text-field.error { border-color: var(--danger); }
+  .field-error {
+    font-size: 12px;
+    color: var(--danger);
+    margin: -6px 0 10px 4px;
+  }
+  .sub-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 4px 0 10px;
+  }
+  .contact-line {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  /* Payment emulation */
+  .back-link {
+    display: inline-block;
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0;
+    margin-bottom: 16px;
+    cursor: pointer;
+  }
+  .payment-note {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 16px;
+    line-height: 1.4;
+  }
+  .mock-card {
+    background: linear-gradient(135deg, #4b3aa8, #2c2178);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+  .mock-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .mock-card-chip {
+    width: 30px;
+    height: 22px;
+    border-radius: 5px;
+    background: linear-gradient(160deg, #e6c869, #b8933a);
+  }
+  .mock-card-badge {
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.12);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .mock-card-number {
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: #fff;
+    margin-bottom: 20px;
+    font-family: "SF Mono", Menlo, monospace;
+  }
+  .mock-card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .cash-note {
+    background: var(--input-bg);
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 18px;
+    line-height: 1.4;
+  }
+  .payment-amount-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: 15px;
+    color: var(--text-secondary);
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .payment-amount {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
 
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(6px); }
@@ -352,9 +472,21 @@
     }
   };
 
+  const PAYMENT_METHODS = [
+    { value: 'card_online', label: 'Картой онлайн' },
+    { value: 'cash', label: 'Наличными мастеру' },
+    { value: 'card_on_delivery', label: 'Картой мастеру при получении' }
+  ];
+
   const answers = {};
   let ordered = []; // set on each render
-  let orderCompleted = false;
+
+  const contactInfo = { fio: '', phone: '', address: '', paymentMethod: null };
+  const contactErrors = { fio: false, phone: false, address: false, paymentMethod: false, type: false };
+  let contactSubmitted = false;
+  let paymentStarted = false;
+  let paymentProcessing = false;
+  let paymentDone = false;
 
   const stepsEl = document.getElementById('steps');
   const totalValueEl = document.getElementById('total-value');
@@ -365,8 +497,7 @@
   const checkIcon = `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#34c759" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`;
 
   function getSequence() {
-    const seq = ['type'];
-    seq.push('stoodBefore');
+    const seq = ['stoodBefore'];
     if (answers.stoodBefore === 'yes') seq.push('demontage');
     seq.push('communications');
     seq.push('socket');
@@ -426,10 +557,23 @@
   }
 
   function editAnswer(stepId) {
+    if (paymentDone || paymentProcessing) return;
     const seq = getSequence();
     const idx = seq.indexOf(stepId);
     seq.slice(idx).forEach((id) => { delete answers[id]; });
     render();
+  }
+
+  function editIntro() {
+    if (paymentDone || paymentProcessing) return;
+    ['stoodBefore', 'demontage', 'communications', 'socket', 'facade'].forEach((id) => { delete answers[id]; });
+    contactSubmitted = false;
+    render();
+  }
+
+  function paymentMethodLabel(value) {
+    const m = PAYMENT_METHODS.find((p) => p.value === value);
+    return m ? m.label : '';
   }
 
   function renderResolvedStep(stepId) {
@@ -454,15 +598,19 @@
       ? (stepId === 'type' ? `${price.toLocaleString('ru-RU')} ₽` : `+${price.toLocaleString('ru-RU')} ₽`)
       : '0 ₽';
 
-    const editBtn = document.createElement('button');
-    editBtn.className = 'edit-btn';
-    editBtn.setAttribute('aria-label', 'Изменить ответ');
-    editBtn.innerHTML = editIcon;
-    editBtn.addEventListener('click', () => editAnswer(stepId));
-
     row.appendChild(textWrap);
     row.appendChild(priceEl);
-    row.appendChild(editBtn);
+
+    if (!paymentDone && !paymentProcessing) {
+      const editBtn = document.createElement('button');
+      editBtn.className = 'edit-btn';
+      editBtn.setAttribute('aria-label', 'Изменить ответ');
+      editBtn.innerHTML = editIcon;
+      editBtn.addEventListener('click', () => {
+        if (stepId === 'type') editIntro(); else editAnswer(stepId);
+      });
+      row.appendChild(editBtn);
+    }
     return row;
   }
 
@@ -516,35 +664,262 @@
     return card;
   }
 
+  function renderIntroStep() {
+    const card = document.createElement('div');
+    card.className = 'step-active';
+
+    const q = document.createElement('div');
+    q.className = 'q';
+    q.textContent = 'Контактные данные';
+    card.appendChild(q);
+
+    const fields = [
+      { key: 'fio', placeholder: 'ФИО', type: 'text', errorText: 'Укажите ФИО' },
+      { key: 'phone', placeholder: 'Телефон', type: 'tel', errorText: 'Укажите телефон' },
+      { key: 'address', placeholder: 'Адрес установки', type: 'text', errorText: 'Укажите адрес' }
+    ];
+
+    fields.forEach((f) => {
+      const input = document.createElement('input');
+      input.className = 'text-field' + (contactErrors[f.key] ? ' error' : '');
+      input.placeholder = f.placeholder;
+      input.type = f.type;
+      input.value = contactInfo[f.key];
+      input.addEventListener('input', () => {
+        contactInfo[f.key] = input.value;
+        if (contactErrors[f.key] && input.value.trim()) {
+          contactErrors[f.key] = false;
+          input.classList.remove('error');
+          const err = input.nextElementSibling;
+          if (err && err.classList.contains('field-error')) err.remove();
+        }
+      });
+      card.appendChild(input);
+      if (contactErrors[f.key]) {
+        const err = document.createElement('div');
+        err.className = 'field-error';
+        err.textContent = f.errorText;
+        card.appendChild(err);
+      }
+    });
+
+    const paymentLabel = document.createElement('div');
+    paymentLabel.className = 'sub-label';
+    paymentLabel.textContent = 'Способ оплаты';
+    card.appendChild(paymentLabel);
+
+    const paymentOpts = document.createElement('div');
+    paymentOpts.className = 'options';
+    PAYMENT_METHODS.forEach((pm) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn' + (contactInfo.paymentMethod === pm.value ? ' selected' : '');
+      btn.innerHTML = `<span>${pm.label}</span>`;
+      btn.addEventListener('click', () => {
+        contactInfo.paymentMethod = pm.value;
+        contactErrors.paymentMethod = false;
+        render();
+      });
+      paymentOpts.appendChild(btn);
+    });
+    card.appendChild(paymentOpts);
+
+    if (contactErrors.paymentMethod) {
+      const err = document.createElement('div');
+      err.className = 'field-error';
+      err.textContent = 'Выберите способ оплаты';
+      card.appendChild(err);
+    }
+
+    const typeLabel = document.createElement('div');
+    typeLabel.className = 'sub-label';
+    typeLabel.textContent = 'Какая стиральная машина?';
+    card.appendChild(typeLabel);
+
+    const typeOpts = document.createElement('div');
+    typeOpts.className = 'options';
+    STEP_DEFS.type.options.forEach((opt) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn' + (answers.type === opt.value ? ' selected' : '');
+      btn.innerHTML = `<span>${opt.label}</span>`;
+      btn.addEventListener('click', () => selectAnswer('type', opt.value));
+      typeOpts.appendChild(btn);
+    });
+    card.appendChild(typeOpts);
+
+    if (contactErrors.type) {
+      const err = document.createElement('div');
+      err.className = 'field-error';
+      err.textContent = 'Выберите тип машины';
+      card.appendChild(err);
+    }
+
+    return card;
+  }
+
+  function renderResolvedContact() {
+    const row = document.createElement('div');
+    row.className = 'step-resolved';
+
+    const textWrap = document.createElement('div');
+    const q = document.createElement('div');
+    q.className = 'q';
+    q.textContent = 'Контактные данные';
+    textWrap.appendChild(q);
+
+    const nameLine = document.createElement('div');
+    nameLine.className = 'a';
+    nameLine.textContent = contactInfo.fio;
+    textWrap.appendChild(nameLine);
+
+    const detailLine = document.createElement('div');
+    detailLine.className = 'contact-line';
+    detailLine.textContent = `${contactInfo.phone} · ${contactInfo.address}`;
+    textWrap.appendChild(detailLine);
+
+    const paymentLine = document.createElement('div');
+    paymentLine.className = 'contact-line';
+    paymentLine.textContent = paymentMethodLabel(contactInfo.paymentMethod);
+    textWrap.appendChild(paymentLine);
+
+    row.appendChild(textWrap);
+
+    if (!paymentDone && !paymentProcessing) {
+      const editBtn = document.createElement('button');
+      editBtn.className = 'edit-btn';
+      editBtn.setAttribute('aria-label', 'Изменить контактные данные');
+      editBtn.innerHTML = editIcon;
+      editBtn.addEventListener('click', () => editIntro());
+      row.appendChild(editBtn);
+    }
+
+    return row;
+  }
+
+  function renderPaymentCard() {
+    const card = document.createElement('div');
+    card.className = 'step-active payment-card';
+
+    const backLink = document.createElement('button');
+    backLink.className = 'back-link';
+    backLink.textContent = '← Назад к заказу';
+    backLink.addEventListener('click', () => {
+      if (paymentProcessing) return;
+      paymentStarted = false;
+      render();
+    });
+    card.appendChild(backLink);
+
+    const q = document.createElement('div');
+    q.className = 'q';
+    q.textContent = 'Оплата заказа';
+    card.appendChild(q);
+
+    const note = document.createElement('p');
+    note.className = 'payment-note';
+    note.textContent = 'Оплата эмулируется — вводить ничего не нужно';
+    card.appendChild(note);
+
+    if (contactInfo.paymentMethod === 'cash') {
+      const cashNote = document.createElement('div');
+      cashNote.className = 'cash-note';
+      cashNote.textContent = 'Наличные — мастер примет оплату при визите на объект';
+      card.appendChild(cashNote);
+    } else {
+      const mock = document.createElement('div');
+      mock.className = 'mock-card';
+
+      const top = document.createElement('div');
+      top.className = 'mock-card-top';
+      const chip = document.createElement('div');
+      chip.className = 'mock-card-chip';
+      const badge = document.createElement('span');
+      badge.className = 'mock-card-badge';
+      badge.textContent = paymentMethodLabel(contactInfo.paymentMethod);
+      top.appendChild(chip);
+      top.appendChild(badge);
+
+      const numberEl = document.createElement('div');
+      numberEl.className = 'mock-card-number';
+      numberEl.textContent = '•••• •••• •••• 4242';
+
+      const bottom = document.createElement('div');
+      bottom.className = 'mock-card-bottom';
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = contactInfo.fio || 'КЛИЕНТ';
+      const expSpan = document.createElement('span');
+      expSpan.textContent = '12/29';
+      bottom.appendChild(nameSpan);
+      bottom.appendChild(expSpan);
+
+      mock.appendChild(top);
+      mock.appendChild(numberEl);
+      mock.appendChild(bottom);
+      card.appendChild(mock);
+    }
+
+    const { total } = computeTotal();
+    const amountRow = document.createElement('div');
+    amountRow.className = 'payment-amount-row';
+    const amountLabel = document.createElement('span');
+    amountLabel.textContent = 'К оплате';
+    const amountValue = document.createElement('span');
+    amountValue.className = 'payment-amount';
+    amountValue.textContent = `${total.toLocaleString('ru-RU')} ₽`;
+    amountRow.appendChild(amountLabel);
+    amountRow.appendChild(amountValue);
+    card.appendChild(amountRow);
+
+    return card;
+  }
+
   function renderSuccess() {
     const box = document.createElement('div');
     box.className = 'success-box';
     box.innerHTML = `
       <div class="check-circle">${checkIcon}</div>
-      <h2>Заказ оформлен</h2>
+      <h2>Оплата прошла успешно</h2>
       <p>Мастер свяжется с вами, чтобы подтвердить дату и время установки.</p>
     `;
     return box;
   }
 
-  let orderPlaced = false;
-
   function render() {
-    ordered = getSequence();
     stepsEl.innerHTML = '';
 
-    if (orderPlaced) {
-      stepsEl.appendChild(renderSuccess());
-      progressLabelEl.textContent = 'Спасибо за заказ!';
-      ctaBtn.textContent = 'Заказ оформлен';
-      ctaBtn.disabled = true;
-      const { total } = computeTotal();
-      totalValueEl.textContent = `${total.toLocaleString('ru-RU')} ₽`;
+    const { total } = computeTotal();
+    totalValueEl.textContent = `${total.toLocaleString('ru-RU')} ₽`;
+
+    if (!contactSubmitted) {
+      stepsEl.appendChild(renderIntroStep());
+      progressLabelEl.textContent = 'Укажите контакты и тип техники, чтобы начать расчёт';
+      ctaBtn.textContent = 'Продолжить';
+      ctaBtn.disabled = false;
       return;
     }
 
+    // Payment and success are separate full screens — nothing else is shown alongside them.
+    if (paymentDone) {
+      stepsEl.appendChild(renderSuccess());
+      progressLabelEl.textContent = 'Оплата прошла успешно';
+      ctaBtn.textContent = 'Заказ оплачен';
+      ctaBtn.disabled = true;
+      return;
+    }
+
+    if (paymentStarted) {
+      stepsEl.appendChild(renderPaymentCard());
+      progressLabelEl.textContent = paymentProcessing ? 'Обрабатываем оплату…' : 'Оплата заказа';
+      ctaBtn.textContent = paymentProcessing ? 'Оплата обрабатывается…' : 'Оплатить';
+      ctaBtn.disabled = paymentProcessing;
+      return;
+    }
+
+    stepsEl.appendChild(renderResolvedContact());
+    stepsEl.appendChild(renderResolvedStep('type'));
+
+    ordered = getSequence();
     let allAnswered = true;
-    let answeredCount = 0;
+    let answeredCount = 2;
 
     for (const stepId of ordered) {
       if (answers[stepId] !== undefined) {
@@ -557,25 +932,50 @@
       }
     }
 
-    orderCompleted = allAnswered;
-
-    if (allAnswered) {
-      stepsEl.appendChild(renderSummary());
-      progressLabelEl.textContent = 'Все вопросы пройдены — проверьте расчёт';
-    } else {
-      progressLabelEl.textContent = `Вопрос ${answeredCount + 1} из ${ordered.length}`;
+    if (!allAnswered) {
+      progressLabelEl.textContent = `Вопрос ${answeredCount} из ${ordered.length + 2}`;
+      ctaBtn.textContent = 'Оформить заказ';
+      ctaBtn.disabled = true;
+      return;
     }
 
-    const { total } = computeTotal();
-    totalValueEl.textContent = `${total.toLocaleString('ru-RU')} ₽`;
-    ctaBtn.textContent = 'Оформить заказ';
-    ctaBtn.disabled = !allAnswered;
+    stepsEl.appendChild(renderSummary());
+    progressLabelEl.textContent = 'Проверьте расчёт перед оплатой';
+    ctaBtn.textContent = 'Перейти к оплате';
+    ctaBtn.disabled = false;
   }
 
   ctaBtn.addEventListener('click', () => {
-    if (!orderCompleted || orderPlaced) return;
-    orderPlaced = true;
-    render();
+    if (ctaBtn.disabled) return;
+
+    if (!contactSubmitted) {
+      contactErrors.fio = !contactInfo.fio.trim();
+      contactErrors.phone = !contactInfo.phone.trim();
+      contactErrors.address = !contactInfo.address.trim();
+      contactErrors.paymentMethod = !contactInfo.paymentMethod;
+      contactErrors.type = !answers.type;
+      const hasErrors = Object.values(contactErrors).some(Boolean);
+      if (hasErrors) { render(); return; }
+      contactSubmitted = true;
+      render();
+      return;
+    }
+
+    if (!paymentStarted) {
+      paymentStarted = true;
+      render();
+      return;
+    }
+
+    if (!paymentDone) {
+      paymentProcessing = true;
+      render();
+      setTimeout(() => {
+        paymentProcessing = false;
+        paymentDone = true;
+        render();
+      }, 900);
+    }
   });
 
   render();
