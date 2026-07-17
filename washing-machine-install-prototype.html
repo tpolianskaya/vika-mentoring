@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Установка стиральной машины — прототип</title>
+<style>
+  :root {
+    --bg: #000000;
+    --card-bg: #1c1c1e;
+    --input-bg: #2c2c2e;
+    --input-bg-2: #232325;
+    --text: #ffffff;
+    --text-secondary: #9a9a9e;
+    --text-placeholder: #6b6b6f;
+    --accent: #7c5cff;
+    --accent-dim: #2a2340;
+    --danger: #ff5b5b;
+    --success: #34c759;
+    --border: #3a3a3c;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  }
+  .screen {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px 20px 140px;
+    min-height: 100vh;
+  }
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .back-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    padding: 0;
+  }
+  .title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+  }
+  .icon-badge {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(160deg, #8a6bff, #5a3fd6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .progress-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 24px;
+  }
+
+  .steps { display: flex; flex-direction: column; gap: 10px; }
+
+  /* Resolved (answered) step */
+  .step-resolved {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    animation: fadeIn .25s ease;
+  }
+  .step-resolved .q {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+  }
+  .step-resolved .a {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 2px;
+  }
+  .step-resolved .price {
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  .step-resolved .price.positive { color: var(--text); }
+  .step-resolved .edit-btn {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--input-bg-2);
+    border: none;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .step-resolved .edit-btn:active { background: var(--border); }
+  .step-resolved .edit-btn svg { width: 16px; height: 16px; }
+
+  /* Active (current) step */
+  .step-active {
+    background: var(--card-bg);
+    border-radius: 18px;
+    padding: 18px;
+    animation: fadeIn .3s ease;
+  }
+  .step-active .q {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 14px;
+    line-height: 1.3;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    width: 100%;
+    text-align: left;
+    background: var(--input-bg);
+    border: 1.5px solid transparent;
+    border-radius: 14px;
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 500;
+    padding: 15px 16px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .option-btn .hint {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-secondary);
+  }
+  .option-btn:hover { border-color: var(--accent); }
+  .option-btn:active { background: var(--accent-dim); }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Summary card */
+  .summary-card {
+    background: var(--card-bg);
+    border-radius: 18px;
+    padding: 18px;
+    animation: fadeIn .3s ease;
+  }
+  .summary-card .q {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 14px;
+  }
+  .breakdown-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .breakdown-row:last-child { border-bottom: none; }
+  .breakdown-row .name { color: var(--text); }
+  .breakdown-row .price { color: var(--text-secondary); white-space: nowrap; }
+  .breakdown-row .price.included { color: var(--success); }
+
+  .success-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    padding: 30px 10px 10px;
+    animation: fadeIn .3s ease;
+  }
+  .success-box .check-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(52,199,89,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .success-box h2 { font-size: 19px; margin: 0; }
+  .success-box p { font-size: 14px; color: var(--text-secondary); margin: 0; line-height: 1.4; }
+
+  /* Sticky bottom bar */
+  .bottom-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(20,20,22,0.92);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border);
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .bottom-bar-inner {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .total-block .total-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .total-block .total-value {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .primary-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 22px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .primary-btn:active { background: #6947e0; }
+  .primary-btn[disabled] {
+    background: var(--input-bg);
+    color: var(--text-placeholder);
+    cursor: default;
+  }
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <div class="top-bar">
+    <button class="back-btn" aria-label="Назад">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+  </div>
+
+  <div class="title-row">
+    <h1>Установка стиральной машины</h1>
+    <div class="icon-badge">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
+        <rect x="3" y="2" width="18" height="20" rx="3" fill="#ffffff" fill-opacity="0.95"/>
+        <circle cx="12" cy="13" r="6" fill="none" stroke="#5a3fd6" stroke-width="2"/>
+        <circle cx="12" cy="13" r="2.5" fill="none" stroke="#5a3fd6" stroke-width="1.6"/>
+        <circle cx="6.2" cy="5.2" r="0.9" fill="#5a3fd6"/>
+        <circle cx="9.2" cy="5.2" r="0.9" fill="#5a3fd6"/>
+      </svg>
+    </div>
+  </div>
+  <p class="progress-label" id="progress-label">Ответьте на несколько вопросов, чтобы рассчитать стоимость</p>
+
+  <div class="steps" id="steps"></div>
+
+</div>
+
+<div class="bottom-bar">
+  <div class="bottom-bar-inner">
+    <div class="total-block">
+      <div class="total-label">Сумма итого</div>
+      <div class="total-value" id="total-value">0 ₽</div>
+    </div>
+    <button class="primary-btn" id="cta-btn" disabled>Оформить заказ</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const STEP_DEFS = {
+    type: {
+      question: 'Какая стиральная машина?',
+      options: [
+        { value: 'freestanding', label: 'Отдельно стоящая' },
+        { value: 'builtin', label: 'Встраиваемая' }
+      ]
+    },
+    stoodBefore: {
+      question: 'Ранее на этом месте стояла стиральная машина?',
+      options: [
+        { value: 'yes', label: 'Да' },
+        { value: 'no', label: 'Нет' }
+      ]
+    },
+    demontage: {
+      question: 'Демонтаж старой машины потребуется?',
+      options: [
+        { value: 'yes', label: 'Да', hint: '+1000 ₽' },
+        { value: 'no', label: 'Нет' }
+      ]
+    },
+    communications: {
+      question: 'Коммуникации по заливу и сливу воды готовы?',
+      options: [
+        { value: 'yes', label: 'Да' },
+        { value: 'no', label: 'Нет', hint: '+2000 ₽' }
+      ]
+    },
+    socket: {
+      question: 'Розетка выведена в нужном месте?',
+      options: [
+        { value: 'yes', label: 'Да' },
+        { value: 'no', label: 'Нет', hint: '+1000 ₽' }
+      ]
+    },
+    facade: {
+      question: 'Навес фасада потребуется?',
+      options: [
+        { value: 'yes', label: 'Да' },
+        { value: 'no', label: 'Нет' }
+      ]
+    }
+  };
+
+  const answers = {};
+  let ordered = []; // set on each render
+  let orderCompleted = false;
+
+  const stepsEl = document.getElementById('steps');
+  const totalValueEl = document.getElementById('total-value');
+  const progressLabelEl = document.getElementById('progress-label');
+  const ctaBtn = document.getElementById('cta-btn');
+
+  const editIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`;
+  const checkIcon = `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#34c759" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`;
+
+  function getSequence() {
+    const seq = ['type'];
+    seq.push('stoodBefore');
+    if (answers.stoodBefore === 'yes') seq.push('demontage');
+    seq.push('communications');
+    seq.push('socket');
+    if (answers.type === 'builtin') seq.push('facade');
+    return seq;
+  }
+
+  function computeTotal() {
+    let total = 0;
+    const breakdown = [];
+
+    if (answers.type === 'freestanding') {
+      total += 5000;
+      breakdown.push({ name: 'Установка отдельно стоящей стиральной машины', price: 5000 });
+    } else if (answers.type === 'builtin') {
+      total += 8000;
+      breakdown.push({ name: 'Установка встраиваемой стиральной машины', price: 8000 });
+    }
+    if (answers.demontage === 'yes') {
+      total += 1000;
+      breakdown.push({ name: 'Демонтаж старой техники', price: 1000 });
+    }
+    if (answers.communications === 'no') {
+      total += 1000;
+      breakdown.push({ name: 'Доработка залива воды', price: 1000 });
+      total += 1000;
+      breakdown.push({ name: 'Доработка слива воды', price: 1000 });
+    }
+    if (answers.socket === 'no') {
+      total += 1000;
+      breakdown.push({ name: 'Установка розетки', price: 1000 });
+    }
+    if (answers.facade === 'yes') {
+      breakdown.push({ name: 'Навес фасада', price: 0, included: true });
+    }
+    return { total, breakdown };
+  }
+
+  function labelFor(stepId, value) {
+    const opt = STEP_DEFS[stepId].options.find((o) => o.value === value);
+    return opt ? opt.label : value;
+  }
+
+  function priceForStep(stepId, value) {
+    switch (stepId) {
+      case 'type': return value === 'freestanding' ? 5000 : 8000;
+      case 'demontage': return value === 'yes' ? 1000 : 0;
+      case 'communications': return value === 'no' ? 2000 : 0;
+      case 'socket': return value === 'no' ? 1000 : 0;
+      default: return 0; // stoodBefore, facade — не влияют на цену
+    }
+  }
+
+  function selectAnswer(stepId, value) {
+    answers[stepId] = value;
+    render();
+  }
+
+  function editAnswer(stepId) {
+    const seq = getSequence();
+    const idx = seq.indexOf(stepId);
+    seq.slice(idx).forEach((id) => { delete answers[id]; });
+    render();
+  }
+
+  function renderResolvedStep(stepId) {
+    const def = STEP_DEFS[stepId];
+    const row = document.createElement('div');
+    row.className = 'step-resolved';
+
+    const textWrap = document.createElement('div');
+    const q = document.createElement('div');
+    q.className = 'q';
+    q.textContent = def.question;
+    const a = document.createElement('div');
+    a.className = 'a';
+    a.textContent = labelFor(stepId, answers[stepId]);
+    textWrap.appendChild(q);
+    textWrap.appendChild(a);
+
+    const price = priceForStep(stepId, answers[stepId]);
+    const priceEl = document.createElement('div');
+    priceEl.className = 'price' + (price > 0 ? ' positive' : '');
+    priceEl.textContent = price > 0
+      ? (stepId === 'type' ? `${price.toLocaleString('ru-RU')} ₽` : `+${price.toLocaleString('ru-RU')} ₽`)
+      : '0 ₽';
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-btn';
+    editBtn.setAttribute('aria-label', 'Изменить ответ');
+    editBtn.innerHTML = editIcon;
+    editBtn.addEventListener('click', () => editAnswer(stepId));
+
+    row.appendChild(textWrap);
+    row.appendChild(priceEl);
+    row.appendChild(editBtn);
+    return row;
+  }
+
+  function renderActiveStep(stepId) {
+    const def = STEP_DEFS[stepId];
+    const card = document.createElement('div');
+    card.className = 'step-active';
+
+    const q = document.createElement('div');
+    q.className = 'q';
+    q.textContent = def.question;
+    card.appendChild(q);
+
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    def.options.forEach((opt) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerHTML = `<span>${opt.label}</span>` + (opt.hint ? `<span class="hint">${opt.hint}</span>` : '');
+      btn.addEventListener('click', () => selectAnswer(stepId, opt.value));
+      opts.appendChild(btn);
+    });
+    card.appendChild(opts);
+    return card;
+  }
+
+  function renderSummary() {
+    const { breakdown } = computeTotal();
+    const card = document.createElement('div');
+    card.className = 'summary-card';
+
+    const q = document.createElement('div');
+    q.className = 'q';
+    q.textContent = 'Итог по заказу';
+    card.appendChild(q);
+
+    breakdown.forEach((item) => {
+      const row = document.createElement('div');
+      row.className = 'breakdown-row';
+      const name = document.createElement('span');
+      name.className = 'name';
+      name.textContent = item.name;
+      const price = document.createElement('span');
+      price.className = 'price' + (item.included ? ' included' : '');
+      price.textContent = item.included ? 'включено' : `${item.price.toLocaleString('ru-RU')} ₽`;
+      row.appendChild(name);
+      row.appendChild(price);
+      card.appendChild(row);
+    });
+
+    return card;
+  }
+
+  function renderSuccess() {
+    const box = document.createElement('div');
+    box.className = 'success-box';
+    box.innerHTML = `
+      <div class="check-circle">${checkIcon}</div>
+      <h2>Заказ оформлен</h2>
+      <p>Мастер свяжется с вами, чтобы подтвердить дату и время установки.</p>
+    `;
+    return box;
+  }
+
+  let orderPlaced = false;
+
+  function render() {
+    ordered = getSequence();
+    stepsEl.innerHTML = '';
+
+    if (orderPlaced) {
+      stepsEl.appendChild(renderSuccess());
+      progressLabelEl.textContent = 'Спасибо за заказ!';
+      ctaBtn.textContent = 'Заказ оформлен';
+      ctaBtn.disabled = true;
+      const { total } = computeTotal();
+      totalValueEl.textContent = `${total.toLocaleString('ru-RU')} ₽`;
+      return;
+    }
+
+    let allAnswered = true;
+    let answeredCount = 0;
+
+    for (const stepId of ordered) {
+      if (answers[stepId] !== undefined) {
+        stepsEl.appendChild(renderResolvedStep(stepId));
+        answeredCount++;
+      } else {
+        stepsEl.appendChild(renderActiveStep(stepId));
+        allAnswered = false;
+        break;
+      }
+    }
+
+    orderCompleted = allAnswered;
+
+    if (allAnswered) {
+      stepsEl.appendChild(renderSummary());
+      progressLabelEl.textContent = 'Все вопросы пройдены — проверьте расчёт';
+    } else {
+      progressLabelEl.textContent = `Вопрос ${answeredCount + 1} из ${ordered.length}`;
+    }
+
+    const { total } = computeTotal();
+    totalValueEl.textContent = `${total.toLocaleString('ru-RU')} ₽`;
+    ctaBtn.textContent = 'Оформить заказ';
+    ctaBtn.disabled = !allAnswered;
+  }
+
+  ctaBtn.addEventListener('click', () => {
+    if (!orderCompleted || orderPlaced) return;
+    orderPlaced = true;
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
