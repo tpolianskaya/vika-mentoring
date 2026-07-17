@@ -735,7 +735,6 @@
     if (ctaBtn.disabled) return;
 
     if (!contactSubmitted) {
-      contactErrors.fio = !contactInfo.fio.trim();
       contactErrors.phone = !contactInfo.phone.trim();
       contactErrors.address = !contactInfo.address.trim();
       contactErrors.type = !answers.type;
